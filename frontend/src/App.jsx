@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_URL = "https://itzzfade.pythonanywhere.com/api/";
+const BASE_URL = "https://itzzfade.pythonanywhere.com/api/tasks/";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -9,9 +9,10 @@ export default function App() {
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState("");
 
+  // GET TASKS
   const fetchTasks = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(BASE_URL);
       const data = await res.json();
       setTasks(data);
     } catch (err) {
@@ -25,19 +26,30 @@ export default function App() {
     fetchTasks();
   }, []);
 
+  // ADD TASK
   const addTask = async () => {
     if (!title.trim()) return;
+
     setAdding(true);
     setError("");
+
     try {
-      const res = await fetch(API_URL, {
+      const res = await fetch(BASE_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), is_completed: false }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title.trim(),
+          is_completed: false,
+        }),
       });
+
       if (res.ok) {
         setTitle("");
         fetchTasks();
+      } else {
+        setError("Failed to add task.");
       }
     } catch (err) {
       setError("Failed to add task.");
@@ -46,21 +58,27 @@ export default function App() {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") addTask();
-  };
-
+  // TOGGLE TASK
   const toggleTask = async (task) => {
     try {
-      await fetch(`${API_URL}${task.id}/`, {
+      await fetch(`${BASE_URL}${task.id}/`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_completed: !task.is_completed }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          is_completed: !task.is_completed,
+        }),
       });
+
       fetchTasks();
     } catch (err) {
       setError("Failed to update task.");
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") addTask();
   };
 
   return (

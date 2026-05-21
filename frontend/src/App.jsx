@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_URL = "http://127.0.0.1:8000/api/tasks/";
+const API_URL = "https://itzzfade.pythonanywhere.com/api/";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
